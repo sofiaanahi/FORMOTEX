@@ -5,8 +5,6 @@ import sequelize from "../db/connection";
 
 
 
-
-
 class Server {
     public app: Application;
     private port: string | undefined;
