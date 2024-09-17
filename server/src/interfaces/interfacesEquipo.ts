@@ -7,4 +7,5 @@ export interface IEquipo {
     numeroSerie: string;
     fechaAdquisicion: Date;
     estado: 'operativo' | "mantenimiento" | "fuera de servicio"
-}
+};
+
