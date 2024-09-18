@@ -10,6 +10,7 @@ interface  IEnv {
     PASSWORD: string | undefined;
     NAME: string | undefined;
     DIALECT: string | undefined;
+    JWT_SECRET: string | undefined;
 };
 
 
@@ -20,7 +21,8 @@ const env: IEnv ={
     USER: process.env.USER,
     PASSWORD: process.env.PASSWORD,
     NAME: process.env.NAME,
-    DIALECT: process.env.DIALECT
+    DIALECT: process.env.DIALECT,
+    JWT_SECRET: process.env.JWT_SECRET
 };
     
 

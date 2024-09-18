@@ -1,89 +1,66 @@
 import { Request, Response } from 'express';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import User from '../models/Users';
 
-class UserController {
+// Función para registrar usuarios
+export const register = async (req: Request, res: Response) => {
+  const {id, username, password, email, role } = req.body;
 
-//obtener todos los usuario
-     public async getUsers( req:Request, res:Response): Promise<Response> {
-        try{
-            const users = await User.findAll(); // obtener todos los users
-            return res.json(users);
-        }catch(error){
-            return res.status(500).json({message: 'Error al obtener usuario', error});
-        }
-        
-    };
+  try {
+    // Verificar si el email ya está registrado
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ msg: 'El correo ya está registrado.' });
+    }
 
-// obtener usuario por ID
-    public async getUserById( req:Request, res:Response): Promise<Response> {
-        const { id } = req.params;
-        try {
-            const user = await User.findByPk(id); // Buscar por ID
-            if (!user) {
-                return res.status(404).json({message: 'usuario no encontrado'});
-            }
-            return res.json(user);
-        }catch(error){
-            return res.status(500).json({message: 'Error al obtener el usuario', error});
-        }
-    };
-
-// crear un nuevo usuario
-    public async createUser(req:Request, res:Response): Promise<Response> {
-            
-        const {id, username, password, email, role } = req.body;
-        try {
-            const nuevoUser = await User.create({
-                id,
-                username,
-                password,
-                email,
-                role
-            });
+    // Encriptar la contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
     
-            return res.status(201).json(nuevoUser);
-        } catch(error){
-            return res.status(500).json({message:'Error al crear un usuario', error});
-        }
-    };
+    // Crear un nuevo usuario
+    const newUser = await User.create({
+      id, 
+      username,
+      password: hashedPassword,  // Guardamos la contraseña encriptada
+      email,
+      role: role || 'user',  // Si no se envía un rol, por defecto es 'user'
+    });
 
-// actualizar usuario
-    public async updateUser(req:Request, res:Response): Promise<Response>{
-        const { id } = req.params;
-        const { username, password, email, role } = req.body;
-        
-        try{
-            const user = await User.findByPk(id);
-            if(!user) {
-                return res.status(404).json({message:'Usuario no encontrado'});
-            }
-
-            await user.update({ username, password, email, role });
-            return res.json({message:'usuario actualizado correctamente'});
-
-        }catch(error){
-        return res.status(500).json({message: 'Error al actualizar un usuario', error});
-        }
-
-    };
-
-// eliminar usuario
-    public async deleteUser(req:Request, res:Response): Promise<Response> {
-        const {id} = req.params;
-        try{
-            const user = await User.findByPk(id);
-            if (!user) {
-                return res.status(404).json({message:'usuario no encontrado'});
-            }
-
-            await user.destroy();
-            return res.json({message:'usuario eliminado correctamente'});
-
-        }catch(error){
-            return res.status(500).json({message:'Error al eliminar el usuario'});
-        }
-    };
-
+    res.status(201).json({
+      msg: 'Usuario registrado con éxito',
+      user: newUser,
+    });
+  } catch (error) {
+    res.status(500).json({
+      msg: 'Error al registrar usuario',
+      error,
+    });
+  }
 };
 
-export default new UserController;
+// Función para iniciar sesión
+export const login = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  
+  try {
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ msg: 'Usuario no encontrado' });
+    }
+
+    // Comparar la contraseña
+    const validPassword = bcrypt.compareSync(password, user.password);
+    if (!validPassword) {
+      return res.status(401).json({ msg: 'Contraseña incorrecta' });
+    }
+
+    // Generar JWT incluyendo el rol del usuario
+    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET as string, {
+      expiresIn: '1h', // Tiempo de expiración
+    });
+
+    res.json({ token });
+  } catch (error) {
+    res.status(500).json({ msg: 'Error en el servidor', error });
+  }
+};

@@ -1,8 +1,10 @@
 
 import express, {Application}  from "express";
 import cors from 'cors';
+import dotenv from 'dotenv';
 import env from '../config/enviroments';
 import sequelize from "../db/connection";
+import bodyParser from 'body-parser';
 import  "../models/Equipo";
 import "../models/Users";
 import "../models/HistorialEquipos";
@@ -11,8 +13,9 @@ import EquipoRouter from "../routes/EquipoRoutes";
 import UserRouter from "../routes/UserRoutes";
 import HistorialEquipoRouter from '../routes/HistorialEquiposRoutes';
 import ProveedoresRouter from '../routes/ProveedoresRoutes';
+import { errorHandlerMiddleware } from "../middlewares/errorHandMiddleware";
 
-
+dotenv.config();
 
 class Server {
     public app: Application;
@@ -31,6 +34,8 @@ class Server {
     middelware():void{
         this.app.use(cors());
         this.app.use(express.json());
+        this.app.use(bodyParser.json());
+        this.app.use(errorHandlerMiddleware);
     }
 
     // metodo para probar la conexion a la base de datos   
