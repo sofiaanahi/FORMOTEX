@@ -8,8 +8,6 @@ export class User extends Model<IUsers> implements IUsers {
     public password!: string;
     public email!: string;
     public role!: 'admin' | 'user';
-    public createdAt?: Date;
-    public updatedAt?: Date;
 
 };
 

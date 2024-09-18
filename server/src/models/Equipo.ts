@@ -3,6 +3,7 @@ import sequelize from '../db/connection';
 import { IEquipo } from '../interfaces/interfacesEquipo';
 
 class Equipo extends Model<IEquipo> implements IEquipo {
+    
     public id!: number;
     public nombre!: string;
     public tipo!: string;
