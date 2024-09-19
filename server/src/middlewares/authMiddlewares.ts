@@ -1,9 +1,10 @@
 
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
+import JWT_SECRET from '../config/enviroments';
 
 
-export const authenticateJWT = (req: CustomRequest, res: Response, next: NextFunction) => {
+export const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
   const token = req.headers['authorization']?.split(' ')[1];
 
   if (!token) {
@@ -11,16 +12,12 @@ export const authenticateJWT = (req: CustomRequest, res: Response, next: NextFun
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+    const decifrar = jwt.verify(token, JWT_SECRET as unknown as string);
+    (req as any).user = decifrar;
+  } catch(error) {
+    return res.status(403).json({ message: 'Token inválido' });
 
-    // Verificamos que el token decodificado sea un objeto (JwtPayload) y no un string
-    if (typeof decoded === 'object' && decoded !== null) {
-      req.user = decoded as jwtPayload;  // Guardamos el payload (datos del usuario) en la request
-      next();  // Permitir acceso a la siguiente ruta
-    } else {
-      return res.status(403).json({ message: 'Token inválido.' });
-    }
-  } catch (error) {
-    res.status(403).json({ message: 'Token inválido o expirado.' });
-  }
-};
+  };
+  
+
+}

@@ -1,4 +1,3 @@
-
 export interface IEquipo {
     id: number;
     nombre: string;
@@ -10,4 +9,5 @@ export interface IEquipo {
     estado: 'operativo' | "mantenimiento" | "fuera de servicio"
 };
 
-export interface InterfazEquiposInfo extends Omit<IEquipo, 'id'>{}
+// Omitimos el campo id de la interfaz cuando creamos un equipo
+export interface InterfazEquiposInfo extends Omit<IEquipo, 'id'> {}
