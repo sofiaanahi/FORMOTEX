@@ -6,3 +6,5 @@ export interface IHistorialEquipo {
     ubicacion: string;  
     realizadoPor: number; 
 }
+
+export interface InterfaceHistorial extends Omit<IHistorialEquipo, 'id'>{}

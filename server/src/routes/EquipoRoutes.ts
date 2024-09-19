@@ -7,10 +7,11 @@ const EquipoRouter = Router();
 
 
 // rutas solo para usuarios autenticados 
+
 // Obtener todos los equipos
-EquipoRouter.get('/equipos',authenticateJWT, isUser, isAdmin, EquipoController.getEquipos);
+EquipoRouter.get('/equipos', EquipoController.getEquipos);
 // Obtener un equipo por ID
-EquipoRouter.get('/equipos/:id', authenticateJWT, isUser, isAdmin, EquipoController.getEquipoById);
+EquipoRouter.get('/equipos/:id', authenticateJWT, isUser, EquipoController.getEquipoById);
 
 
 

@@ -2,6 +2,7 @@ import { Model, DataTypes } from "sequelize";
 import sequelize from '../db/connection';  
 import { IUsers } from "../interfaces/interfacesUser";
 
+
 export class User extends Model<IUsers> implements IUsers {
     public id!: number;
     public username!: string;

@@ -10,7 +10,7 @@ interface  IEnv {
     PASSWORD: string | undefined;
     NAME: string | undefined;
     DIALECT: string | undefined;
-    JWT_SECRET: string | undefined;
+    JWT_SECRET: string | undefined // "clave_secreta_super_segura";
 };
 
 
@@ -24,6 +24,6 @@ const env: IEnv ={
     DIALECT: process.env.DIALECT,
     JWT_SECRET: process.env.JWT_SECRET
 };
-    
+
 
 export default env;

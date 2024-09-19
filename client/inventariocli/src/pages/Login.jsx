@@ -3,18 +3,12 @@ import { useNavigate } from 'react-router-dom'; // Importar useNavigate para red
 import { Link } from 'react-router-dom'; // Asegúrate de importar Link correctamente
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+  const [email,setEmail]= useState('');
+  const [password,setPassword]= useState('');
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const navigate = useNavigate(); // Inicializa useNavigate
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,18 +18,23 @@ const Login = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({email,password}),
       });
 
-      const result = await response.json();
+       if(!response.ok){
+        const erroData = await response.json();
+        throw new Error(erroData.message || 'Login faild')
+       }
 
-      if (response.ok) {
-        setSuccess(result.msg);
-        setError(null);
-        navigate('/equipos'); // Redirige a la página de "Equipos" después del inicio de sesión
-      } else {
-        setError(result.msg || 'Error al iniciar sesión');
-        setSuccess(null);
+      //alamcena la respuesta 
+      const data = await response.json();
+      //instanciar el token en el localstorage
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('role',data.role);
+      if(data.role==='admin'){
+        navigate('/equipos')
+      }else{
+        navigate('/equipoUser')
       }
     } catch (err) {
       setError('Error al iniciar sesión');
@@ -56,8 +55,8 @@ const Login = () => {
               type="email"
               id="email"
               name="email"
-              value={formData.email}
-              onChange={handleChange}
+              value={email}
+              onChange={(e)=> setEmail(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded"
               required
             />
@@ -68,8 +67,8 @@ const Login = () => {
               type="password"
               id="password"
               name="password"
-              value={formData.password}
-              onChange={handleChange}
+              value={password}
+              onChange={(e)=> setPassword(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded"
               required
             />

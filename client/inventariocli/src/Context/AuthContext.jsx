@@ -10,8 +10,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   // Función para iniciar sesión (simulación)
-  const login = (userData) => {
-    setUser(userData);
+  const login = (token) => {
+    setUser({token});
   };
 
   // Función para cerrar sesión

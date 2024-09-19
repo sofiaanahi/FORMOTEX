@@ -10,20 +10,12 @@ const EquiposPage = () => {
   useEffect(() => {
     const fetchEquipos = async () => {
       try {
-        // Obtén el token de autenticación de tu contexto de usuario (si existe)
-        const token = user ? user.token : null;
-
-        // Verifica si hay un token antes de hacer la solicitud
-        if (!token) {
-          throw new Error('No token provided!');
-        }
 
         const response = await fetch('http://localhost:5000/api/equipos', {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`, // Incluye el token de autenticación
           },
         });
 
